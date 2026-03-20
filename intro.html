@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Intro</title>
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      cursor: pointer;
+    }
+
+    #scene {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      /* Masque tous les contrôles natifs */
+      pointer-events: none;
+    }
+
+    /* Overlay cliquable */
+    #overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Indicateur "cliquer pour lancer" */
+    #hint {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      transition: opacity 0.5s ease;
+    }
+
+    #hint.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .play-ring {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .play-ring svg {
+      width: 28px;
+      height: 28px;
+      fill: rgba(255,255,255,0.9);
+      margin-left: 4px; /* compense l'optique du triangle */
+    }
+
+    .play-label {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1);   box-shadow: 0 0 0 0   rgba(255,255,255,0.25); }
+      50%       { transform: scale(1.05); box-shadow: 0 0 0 14px rgba(255,255,255,0);    }
+    }
+  </style>
+</head>
+<body>
+
+<div id="scene">
+  <!--
+    ┌──────────────────────────────────────────────────────────┐
+    │  Remplace "Intro-envelope.webm" par le chemin réel       │
+    │  de ta vidéo dans ton repo GitHub, par exemple :         │
+    │    src="assets/Intro-envelope.webm"                      │
+    └──────────────────────────────────────────────────────────┘
+  -->
+  <video
+    id="vid"
+    src="Intro-envelope.webm"
+    preload="auto"
+    playsinline
+    webkit-playsinline
+    muted
+  ></video>
+
+  <!-- Clic sur cet overlay = lecture -->
+  <div id="overlay">
+    <div id="hint">
+      <div class="play-ring">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </div>
+      <span class="play-label">Cliquer pour continuer</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const vid     = document.getElementById('vid');
+  const overlay = document.getElementById('overlay');
+  const hint    = document.getElementById('hint');
+
+  // ── À MODIFIER : URL de la page suivante ──────────────────
+  const NEXT_PAGE = 'https://ton-site.com/page-suivante';
+  // ──────────────────────────────────────────────────────────
+
+  let played = false;
+
+  overlay.addEventListener('click', () => {
+    if (played) return;
+    played = true;
+
+    hint.classList.add('hidden');
+
+    vid.play().catch(err => {
+      // Fallback : certains navigateurs bloquent l'autoplay même au clic
+      console.warn('Lecture bloquée :', err);
+    });
+  });
+
+  vid.addEventListener('ended', () => {
+    // Redirige vers la page suivante dès la fin de la vidéo
+    window.location.href = NEXT_PAGE;
+  });
+</script>
+
+</body>
+</html>
